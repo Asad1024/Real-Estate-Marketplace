@@ -1,7 +1,7 @@
 import React from "react";
 
-const ForgetPassword = () => {
-  return <div>ForgetPassword</div>;
+const ForgotPassword = () => {
+  return <div className="text-3xl font-bold underline">ForgotPassword</div>;
 };
 
-export default ForgetPassword;
+export default ForgotPassword;
