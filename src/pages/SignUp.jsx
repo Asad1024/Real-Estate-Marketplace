@@ -102,7 +102,7 @@ export default function SignUp() {
                 />
               )}
             </div>
-            <div className="flex justify-between whitespace-nowrap text-sm sm:text-lg">
+            <div className="flex justify-between whitespace-nowrap text-sm font-semibold sm:text-lg">
               <p className="mb-6">
                 Have a account?
                 <Link
