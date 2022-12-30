@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Spinner from "../components/Spinner";
-import { getAuth } from "firebase/auth";
 import { db } from "../firebase";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, {
@@ -21,9 +20,11 @@ import {
   FaParking,
   FaChair,
 } from "react-icons/fa";
+import { getAuth } from "firebase/auth";
 import Contact from "../components/Contact";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 
-const Listing = () => {
+export default function Listing() {
   const auth = getAuth();
   const params = useParams();
   const [listing, setListing] = useState(null);
@@ -84,6 +85,7 @@ const Listing = () => {
           Link Copied
         </p>
       )}
+
       <div className="m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg shadow-lg bg-white lg:space-x-5">
         <div className=" w-full ">
           <p className="text-2xl font-bold mb-3 text-blue-900">
@@ -147,10 +149,25 @@ const Listing = () => {
             <Contact userRef={listing.userRef} listing={listing} />
           )}
         </div>
-        <div></div>
+        <div className="w-full h-[200px] md:h-[400px] z-10 overflow-x-hidden mt-6 md:mt-0 md:ml-2">
+          <MapContainer
+            center={[listing.geolocation.lat, listing.geolocation.lng]}
+            zoom={13}
+            scrollWheelZoom={false}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker
+              position={[listing.geolocation.lat, listing.geolocation.lng]}
+            >
+              <Popup>{listing.address}</Popup>
+            </Marker>
+          </MapContainer>
+        </div>
       </div>
     </main>
   );
-};
-
-export default Listing;
+}

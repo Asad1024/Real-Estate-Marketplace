@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 export default function CreateListing() {
   const navigate = useNavigate();
   const auth = getAuth();
-  const [geolocationEnabled, setGeolocationEnabled] = useState(true);
+  const [geolocationEnabled, setGeolocationEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     type: "rent",
@@ -97,11 +97,14 @@ export default function CreateListing() {
       geolocation.lat = data.results[0]?.geometry.location.lat ?? 0;
       geolocation.lng = data.results[0]?.geometry.location.lng ?? 0;
 
-      location = data.status === "ZERO_RESULTS" && undefined;
+      location =
+        data.status === "ZERO_RESULTS"
+          ? undefined
+          : data.results[0]?.formatted_address;
 
-      if (location === undefined) {
+      if (location === undefined || location.includes("undefined")) {
         setLoading(false);
-        toast.error("please enter a correct address");
+        toast.error("Please enter a correct address");
         return;
       }
     } else {
@@ -316,8 +319,6 @@ export default function CreateListing() {
                 value={latitude}
                 onChange={onChange}
                 required
-                min="-90"
-                max="90"
                 className="w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition duration-150 ease-in-out focus:bg-white focus:text-gray-700 focus:border-slate-600 text-center"
               />
             </div>
@@ -329,8 +330,6 @@ export default function CreateListing() {
                 value={longitude}
                 onChange={onChange}
                 required
-                min="-180"
-                max="180"
                 className="w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition duration-150 ease-in-out focus:bg-white focus:text-gray-700 focus:border-slate-600 text-center"
               />
             </div>
