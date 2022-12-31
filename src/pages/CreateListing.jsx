@@ -335,7 +335,7 @@ export default function CreateListing() {
             </div>
           </div>
         )}
-        <p className="text-lg font-semibold">Description</p>
+        <p className="text-lg font-semibold">Description & Contact No</p>
         <textarea
           type="text"
           id="description"
@@ -386,7 +386,7 @@ export default function CreateListing() {
               />
               {type === "rent" && (
                 <div className="">
-                  <p className="text-md w-full whitespace-nowrap">$ / Month</p>
+                  <p className="text-md w-full whitespace-nowrap">Rs / Month</p>
                 </div>
               )}
             </div>
@@ -410,7 +410,7 @@ export default function CreateListing() {
                 {type === "rent" && (
                   <div className="">
                     <p className="text-md w-full whitespace-nowrap">
-                      $ / Month
+                      Rs / Month
                     </p>
                   </div>
                 )}

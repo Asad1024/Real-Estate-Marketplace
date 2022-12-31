@@ -121,7 +121,7 @@ export default function Profile() {
               className="mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition ease-in-out"
             />
 
-            <div className="flex justify-between whitespace-nowrap text-sm sm:text-lg mb-6">
+            <div className="flex justify-between whitespace-nowrap text-sm font-semibold sm:text-lg mb-6">
               <p className="flex items-center ">
                 Do you want to change your name?
                 <span
