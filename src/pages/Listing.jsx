@@ -117,6 +117,10 @@ export default function Listing() {
             <span className="font-semibold">Description - </span>
             {listing.description}
           </p>
+          <p className="mt-3 mb-3">
+            <span className="font-semibold">Contact No - </span>
+            {listing.contact}
+          </p>
           <ul className="flex items-center space-x-2 sm:space-x-10 text-sm font-semibold mb-6">
             <li className="flex items-center whitespace-nowrap">
               <FaBed className="text-lg mr-1" />
