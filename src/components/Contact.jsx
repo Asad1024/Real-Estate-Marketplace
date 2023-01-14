@@ -1,8 +1,11 @@
+
 import { doc, getDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { db } from "../firebase";
+import { BsWhatsapp } from "react-icons/bs";
+import { MdDialerSip } from "react-icons/md";
 
 export default function Contact({ userRef, listing }) {
   const [landlord, setLandlord] = useState(null);
@@ -24,6 +27,21 @@ export default function Contact({ userRef, listing }) {
   }
   return (
     <>
+      <div className="flex items-center justify-center my-3">
+        <a
+          href={`https://wa.me/${listing.contact}?text=Hello, I would like to get more information about your products.`}
+          target="_blank"
+          className="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-full"
+        >
+          <BsWhatsapp className="text-2xl" />
+        </a>
+        <a
+          href={`tel:${listing.contact}`}
+          className="ml-3 bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-full"
+        >
+          <MdDialerSip className="text-2xl" />
+        </a>
+      </div>
       {landlord !== null && (
         <div className="flex flex-col w-full">
           <p>
