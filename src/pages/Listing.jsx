@@ -23,6 +23,8 @@ import {
 import { getAuth } from "firebase/auth";
 import Contact from "../components/Contact";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { BsWhatsapp } from "react-icons/bs";
+import { MdDialerSip } from "react-icons/md";
 
 export default function Listing() {
   const auth = getAuth();
@@ -114,13 +116,29 @@ export default function Listing() {
             )}
           </div>
           <p className="mt-3 mb-3">
-            <span className="font-semibold">Description - </span>
+            <span className="font-semibold">Description : </span>
             {listing.description}
           </p>
           <p className="mt-3 mb-3">
-            <span className="font-semibold">Contact No - </span>
+            <span className="font-semibold">Contact No : </span>
             {listing.contact}
           </p>
+          {/* <div className="flex items-center justify-center my-3">
+            <a
+              href={`https://wa.me/${listing.contact}?text=Hello, I would like to get more information about your products.`}
+              target="_blank"
+              className="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-full"
+            >
+              <BsWhatsapp className="text-2xl" />
+            </a>
+            <a
+              href={`tel:${listing.contact}`}
+              className="ml-3 bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-full"
+            >
+              <MdDialerSip className="text-2xl" />
+            </a>
+          </div> */}
+
           <ul className="flex items-center space-x-2 sm:space-x-10 text-sm font-semibold mb-6">
             <li className="flex items-center whitespace-nowrap">
               <FaBed className="text-lg mr-1" />
