@@ -15,11 +15,15 @@ export default function Header() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setPageState(
-          <img
-            className="w-6 h-6 rounded-full ring-2 ring-gray-300 dark:ring-gray-500"
-            src={auth.currentUser.photoURL}
-            alt="Rounded avatar"
-          />
+          <div>
+            {" "}
+            <img
+              className="w-6 h-6 rounded-full ring-2 ring-gray-300 dark:ring-gray-500"
+              src={auth.currentUser.photoURL}
+              alt="Rounded avatar"
+            />
+            <span class="absolute bottom-3 mx-4 inline-block w-3 h-3 bg-green-600 border-2 border-white rounded-full"></span>
+          </div>
         );
       } else {
         setPageState(
