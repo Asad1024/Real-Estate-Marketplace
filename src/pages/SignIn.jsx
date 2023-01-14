@@ -113,7 +113,7 @@ const SignIn = () => {
     //     </div>
     //   </div>
     // </section>
-    <div className="flex justify-start items-center flex-col h-screen">
+    <div className="flex justify-start items-center flex-col h-screen fixed w-full">
       <div className=" relative w-full h-full">
         <video
           src={shareVideo}
