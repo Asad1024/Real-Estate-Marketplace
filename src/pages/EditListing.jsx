@@ -42,6 +42,7 @@ export default function CreateListing() {
     latitude: 0,
     longitude: 0,
     images: {},
+    contact: ""
   });
   const {
     type,
@@ -58,6 +59,7 @@ export default function CreateListing() {
     latitude,
     longitude,
     images,
+    contact,
   } = formData;
 
   const params = useParams();
@@ -381,6 +383,16 @@ export default function CreateListing() {
           type="text"
           id="description"
           value={description}
+          onChange={onChange}
+          placeholder="Description"
+          required
+          className="w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
+        />
+         <p className="text-lg font-semibold">Contact No</p>
+        <textarea
+          type="text"
+          id="contact"
+          value={contact}
           onChange={onChange}
           placeholder="Description"
           required
