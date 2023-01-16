@@ -50,12 +50,12 @@ export default function Header(props) {
           <img
             src={props.darkMode ? logo2 : logo}
             alt="logo"
-            className="h-8 cursor-pointer"
+            className="w-4/5 md:w-full h-8 cursor-pointer"
             onClick={() => navigate("/")}
           />
         </div>
         <div>
-          <ul className="flex space-x-10">
+          <ul className="flex space-x-9">
             <li
               className={`cursor-pointer py-3 text-xl font-semibold text-gray-400 border-b-[3px] border-b-transparent ${
                 pathMatchRoute("/") && "text-black border-b-red-500"
