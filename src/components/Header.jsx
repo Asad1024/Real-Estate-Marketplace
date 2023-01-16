@@ -18,12 +18,13 @@ export default function Header(props) {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setPageState(
-          <div>
+          <div className="relative">
             <img
               className="w-6 h-6 rounded-full ring-2 ring-gray-300 dark:ring-gray-500"
               src={auth.currentUser.photoURL}
               alt="Rounded avatar"
             />
+            <span class="top-4 left-4 absolute  w-3 h-3 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
           </div>
         );
       } else {
