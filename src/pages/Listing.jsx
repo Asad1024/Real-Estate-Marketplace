@@ -25,8 +25,11 @@ import Contact from "../components/Contact";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { BsWhatsapp } from "react-icons/bs";
 import { MdDialerSip } from "react-icons/md";
+import { useContext } from "react";
+import { DarkModeContext } from "../App";
 
-export default function Listing() {
+export default function Listing(props) {
+  const darkMode = useContext(DarkModeContext);
   const auth = getAuth();
   const params = useParams();
   const [listing, setListing] = useState(null);
@@ -48,6 +51,7 @@ export default function Listing() {
   if (loading) {
     return <Spinner />;
   }
+
   return (
     <main>
       <Swiper
@@ -88,9 +92,15 @@ export default function Listing() {
         </p>
       )}
 
-      <div className="m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg shadow-lg bg-white lg:space-x-5">
+      <div
+        className={`m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg shadow-lg bg-white lg:space-x-5 ${
+          darkMode
+            ? "bg-gray-800 text-indigo-100"
+            : "bg-indigo-100 text-gray-800"
+        }`}
+      >
         <div className=" w-full ">
-          <p className="text-2xl font-bold mb-3 text-blue-900">
+          <p className="text-2xl font-bold mb-3">
             {listing.name} - Rs{" "}
             {listing.offer
               ? listing.discountedPrice
@@ -105,7 +115,7 @@ export default function Listing() {
             <FaMapMarkerAlt className="text-green-700 mr-1" />
             {listing.address}
           </p>
-          <div className="flex justify-start items-center space-x-4 w-[100%]">
+          <div className="flex justify-start  items-center space-x-4 w-[100%]">
             <p className="bg-red-800 w-full max-w-[200px] rounded-md p-1 text-white text-center font-semibold shadow-md">
               {listing.type === "rent" ? "Rent" : "Sale"}
             </p>
@@ -123,21 +133,6 @@ export default function Listing() {
             <span className="font-semibold">Contact No : </span>
             {listing.contact}
           </p>
-          {/* <div className="flex items-center justify-center my-3">
-            <a
-              href={`https://wa.me/${listing.contact}?text=Hello, I would like to get more information about your products.`}
-              target="_blank"
-              className="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-full"
-            >
-              <BsWhatsapp className="text-2xl" />
-            </a>
-            <a
-              href={`tel:${listing.contact}`}
-              className="ml-3 bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-full"
-            >
-              <MdDialerSip className="text-2xl" />
-            </a>
-          </div> */}
 
           <ul className="flex items-center space-x-2 sm:space-x-10 text-sm font-semibold mb-6">
             <li className="flex items-center whitespace-nowrap">
