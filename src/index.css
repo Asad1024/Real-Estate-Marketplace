@@ -22,3 +22,13 @@ html::-webkit-scrollbar {
 html {
   scrollbar-width: none;
 }
+body {
+  background-color: #fff;
+  color: #2d3748;
+}
+
+.dark-mode {
+  background-color: #2d3748;
+  color: #fff;
+}
+
