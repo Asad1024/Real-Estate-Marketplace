@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import logo from "../img/1.png";
+import logo2 from "../assests/svg/2.png";
 import Avatar from "../assests/svg/avatar.png";
 import { FcHome } from "react-icons/fc";
+import { FaMoon, FaSun } from "react-icons/fa";
 import { TbDiscount2 } from "react-icons/tb";
+import "../index.css";
 
-export default function Header() {
+export default function Header(props) {
   const [pageState, setPageState] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
@@ -16,13 +19,11 @@ export default function Header() {
       if (user) {
         setPageState(
           <div>
-            {" "}
             <img
               className="w-6 h-6 rounded-full ring-2 ring-gray-300 dark:ring-gray-500"
               src={auth.currentUser.photoURL}
               alt="Rounded avatar"
             />
-            <span class="absolute bottom-3 mx-4 inline-block w-3 h-3 bg-green-600 border-2 border-white rounded-full"></span>
           </div>
         );
       } else {
@@ -42,11 +43,11 @@ export default function Header() {
     }
   }
   return (
-    <div className="bg-white border-b shadow-sm sticky top-0 z-40">
-      <header className="flex justify-between items-center px-3 max-w-6xl mx-auto">
+    <div>
+      <header className="flex justify-between items-center px-3 max-w-7xl mx-auto">
         <div>
           <img
-            src={logo}
+            src={props.darkMode ? logo2 : logo}
             alt="logo"
             className="h-8 cursor-pointer"
             onClick={() => navigate("/")}
@@ -68,7 +69,11 @@ export default function Header() {
               }`}
               onClick={() => navigate("/offers")}
             >
-              <TbDiscount2 />
+              {props.darkMode ? (
+                <TbDiscount2 className="stroke-orange-500" />
+              ) : (
+                <TbDiscount2 />
+              )}
             </li>
             <li
               className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${
@@ -79,6 +84,17 @@ export default function Header() {
             >
               {pageState}
             </li>
+            <div className="relative h-30 w-30 ...">
+              <div class="absolute top-0 right-0 ...">
+                <button
+                  onClick={() => props.toggleDarkMode()}
+                  className="dark-mode-toggle-btn cursor-pointer py-3  text-lg font-semibold text-gray-400 border-b-[3px] border-b-transparent"
+                >
+                  {props.darkMode ? <FaMoon /> : <FaSun />}
+                </button>
+              </div>
+            </div>
+            {/* <button onClick={props.toggleDarkMode}>Toggle Dark Mode</button> */}
           </ul>
         </div>
       </header>
