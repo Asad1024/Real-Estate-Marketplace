@@ -1,245 +1,215 @@
-
-import {
-  collection,
-  getDoc,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
-import { useEffect } from "react";
+import { doc, getDoc } from "firebase/firestore";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import ListingItem from "../components/ListingItem";
-import Slider from "../components/Slider";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import Spinner from "../components/Spinner";
 import { db } from "../firebase";
+import { Swiper, SwiperSlide } from "swiper/react";
+import SwiperCore, {
+  EffectFade,
+  Autoplay,
+  Navigation,
+  Pagination,
+} from "swiper";
+import "swiper/css/bundle";
+import {
+  FaShare,
+  FaMapMarkerAlt,
+  FaBed,
+  FaBath,
+  FaParking,
+  FaChair,
+} from "react-icons/fa";
 import { getAuth } from "firebase/auth";
+import Contact from "../components/Contact";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { BsWhatsapp } from "react-icons/bs";
+import { MdDialerSip } from "react-icons/md";
+import { useContext } from "react";
+import { DarkModeContext } from "../App";
+import { Link } from "react-router-dom";
 
-export default function Home() {
+export default function Listing(props) {
+  const darkMode = useContext(DarkModeContext);
   const auth = getAuth();
   const user = auth.currentUser;
   if (user) {
   } else {
   }
-  // Offers
-   const [searchQuery, setSearchQuery] = useState("");
- const [offerListings, setOfferListings] = useState(null);
-
-useEffect(() => {
-  async function fetchListings() {
-    try {
-      // get reference
-      const listingsRef = collection(db, "listings");
-      // create the query
-      const q = query(
-        listingsRef,
-        where("offer", "==", true),
-        orderBy("timestamp", "desc"),
-        limit(4)
-      );
-      // execute the query
-      const querySnap = await getDocs(q);
-      const listings = [];
-      querySnap.forEach((doc) => {
-        return listings.push({
-          id: doc.id,
-          data: doc.data(),
-        });
-      });
-      // filter the listings array
-      const filteredListings = listings.filter((listing) =>
-        listing.data.address.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setOfferListings(filteredListings);
-    } catch (error) {
-      console.log(error);
+  const params = useParams();
+  const [listing, setListing] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [shareLinkCopied, setShareLinkCopied] = useState(false);
+  const [contactLandlord, setContactLandlord] = useState(false);
+  SwiperCore.use([Autoplay, Navigation, Pagination]);
+  useEffect(() => {
+    async function fetchListing() {
+      const docRef = doc(db, "listings", params.listingId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setListing(docSnap.data());
+        setLoading(false);
+      }
     }
+    fetchListing();
+  }, [params.listingId]);
+  if (loading) {
+    return <Spinner />;
   }
-  fetchListings();
-}, [searchQuery]);
 
-  // Places for rent
-  const [rentListings, setRentListings] = useState(null);
-  useEffect(() => {
-    async function fetchListings() {
-      try {
-        // get reference
-        const listingsRef = collection(db, "listings");
-        // create the query
-        const q = query(
-          listingsRef,
-          where("type", "==", "rent"),
-          orderBy("timestamp", "desc"),
-          limit(4)
-        );
-        // execute the query
-        const querySnap = await getDocs(q);
-        const listings = [];
-        querySnap.forEach((doc) => {
-          return listings.push({
-            id: doc.id,
-            data: doc.data(),
-          });
-        });
-         // filter the listings array
-      const filteredListings = listings.filter((listing) =>
-      listing.data.address.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-        setRentListings(filteredListings);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    fetchListings();
-  }, [searchQuery]);
-  // Places for sale
-  const [saleListings, setSaleListings] = useState(null);
-  useEffect(() => {
-    async function fetchListings() {
-      try {
-        // get reference
-        const listingsRef = collection(db, "listings");
-        // create the query
-        const q = query(
-          listingsRef,
-          where("type", "==", "sale"),
-          orderBy("timestamp", "desc"),
-          limit(4)
-        );
-        // execute the query
-        const querySnap = await getDocs(q);
-        const listings = [];
-        querySnap.forEach((doc) => {
-          return listings.push({
-            id: doc.id,
-            data: doc.data(),
-          });
-        });
-           // filter the listings array
-      const filteredListings = listings.filter((listing) =>
-      listing.data.address.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-        setSaleListings(filteredListings);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    fetchListings();
-  }, [searchQuery]);
+  
+
   return (
-    <div>
-      <Slider />
-      {user ? (
-        <>
-         <div style={{ display: "flex", justifyContent: "flex-end" }} className="mr-4 mt-3">
-      <select
-        onChange={(e) => setSearchQuery(e.target.value)}
-        value={searchQuery}
->
-  <option value="">Select</option>
-  <option value="Lahore">Lahore</option>
-  <option value="Bahawalpur">Bahawalpur</option>
-  <option value="Hasilpur">Hasilpur</option>
-  <option value="Islamabad">Islamabad</option>
-  <option value="Bahawalnagar">Bahawalnagar</option>
-  <option value="Khair Pur">Khair Pur</option>
-  <option value="Multan">Multan</option>
-  <option value="	Faisalabad">	Faisalabad</option>
-  <option value="	Rahim Yar Khan">	Rahim Yar Khan</option>
-  <option value="	Chishtian">	Chishtian</option>
-</select>
-      <input
-          type="text"
-           placeholder="City Name"
-            value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          />
+    <main>
 
+      <Swiper
+        slidesPerView={1}
+        navigation
+        pagination={{ type: "progressbar" }}
+        effect="fade"
+        modules={[EffectFade]}
+        autoplay={{ delay: 3000 }}
+      >
+        {listing.imgUrls.map((url, index) => (
+          <SwiperSlide key={index}>
+            <div
+              className="relative w-full overflow-hidden h-[300px]"
+              style={{
+                background: `url(${listing.imgUrls[index]}) center no-repeat`,
+                backgroundSize: "cover",
+              }}
+            ></div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+      <div
+        className="fixed top-[13%] right-[3%] z-10 bg-white cursor-pointer border-2 border-gray-400 rounded-full w-12 h-12 flex justify-center items-center"
+        onClick={() => {
+          navigator.clipboard.writeText(window.location.href);
+          setShareLinkCopied(true);
+          setTimeout(() => {
+            setShareLinkCopied(false);
+          }, 2000);
+        }}
+      >
+        <FaShare className="text-lg text-slate-500" />
       </div>
-        </>
-      ) : (
-        <>
-        
-        </>
+      {shareLinkCopied && (
+        <p className="fixed top-[23%] right-[5%] font-semibold border-2 border-gray-400 rounded-md bg-white z-10 p-2">
+          Link Copied
+        </p>
       )}
-      <div className="max-w-6xl mx-auto pt-4 space-y-6">
-        {offerListings && offerListings.length > 0 && (
-          <div className="m-2 mb-6 text-center">
-            <h2 className="px-3 text-2xl mt-6 mb-3 font-semibold">
-              Recent offers
-            </h2>
-            <Link to="/offers">
-              <a
-                href="#_"
-                class="relative rounded px-5 py-2 mx-3 bottom-1 overflow-hidden group bg-blue-500 relative hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-blue-400 transition-all ease-out duration-300"
-              >
-                <span class="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-                <span class="relative">Show more offers</span>
-              </a>
-            </Link>
-            <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
-              {offerListings.map((listing) => (
-                <ListingItem
-                  key={listing.id}
-                  listing={listing.data}
-                  id={listing.id}
-                />
-              ))}
-            </ul>
+
+{user ? (
+    <>
+       <div
+        className={`m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg shadow-lg bg-white lg:space-x-5 ${
+          darkMode
+            ? "bg-gray-800 text-indigo-100"
+            : "bg-indigo-100 text-gray-800"
+        }`}
+      >
+        <div className=" w-full ">
+          <p className="text-2xl font-bold mb-3">
+            {listing.name} - Rs{" "}
+            {listing.offer
+              ? listing.discountedPrice
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              : listing.regularPrice
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+            {listing.type === "rent" ? " / month" : ""}
+          </p>
+          <p className="flex items-center mt-6 mb-3 font-semibold">
+            <FaMapMarkerAlt className="text-green-700 mr-1" />
+            {listing.address}
+          </p>
+          <div className="flex justify-start  items-center space-x-4 w-[100%]">
+            <p className="bg-red-800 w-full max-w-[200px] rounded-md p-1 text-white text-center font-semibold shadow-md">
+              {listing.type === "rent" ? "Rent" : "Sale"}
+            </p>
+            {listing.offer && (
+              <p className="w-full max-w-[200px] bg-green-800 rounded-md p-1 text-white text-center font-semibold shadow-md">
+                Rs {+listing.regularPrice - +listing.discountedPrice} discount
+              </p>
+            )}
           </div>
-        )}
-        {rentListings && rentListings.length > 0 && (
-          <div className="m-2 mb-6  text-center">
-            <h2 className="px-3 text-2xl mt-6 mb-3 font-semibold">
-              Places for rent
-            </h2>
-            <Link to="/category/rent">
-              <a
-                href="#_"
-                class="relative rounded px-5 py-2 mx-3 bottom-1 overflow-hidden group bg-blue-500 relative hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-blue-400 transition-all ease-out duration-300"
+          <p className="mt-3 mb-3">
+            <span className="font-semibold">Description : </span>
+            {listing.description}
+          </p>
+          <p className="mt-3 mb-3">
+            <span className="font-semibold">Contact No : </span>
+            {listing.contact}
+          </p>
+
+          <ul className="flex items-center space-x-2 sm:space-x-10 text-sm font-semibold mb-6">
+            <li className="flex items-center whitespace-nowrap">
+              <FaBed className="text-lg mr-1" />
+              {+listing.bedrooms > 1 ? `${listing.bedrooms} Beds` : "1 Bed"}
+            </li>
+            <li className="flex items-center whitespace-nowrap">
+              <FaBath className="text-lg mr-1" />
+              {+listing.bathrooms > 1 ? `${listing.bathrooms} Baths` : "1 Bath"}
+            </li>
+            <li className="flex items-center whitespace-nowrap">
+              <FaParking className="text-lg mr-1" />
+              {listing.parking ? "Parking" : "No parking"}
+            </li>
+            <li className="flex items-center whitespace-nowrap">
+              <FaChair className="text-lg mr-1" />
+              {listing.furnished ? "Furnished" : "Not furnished"}
+            </li>
+          </ul>
+          {listing.userRef !== auth.currentUser?.uid && !contactLandlord && (
+            <div className="mt-6">
+              <button
+                onClick={() => setContactLandlord(true)}
+                className="px-7 py-3 bg-blue-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg w-full text-center transition duration-150 ease-in-out "
               >
-                <span class="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-                <span class="relative">Show more places for rent</span>
-              </a>
-            </Link>
-            <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
-              {rentListings.map((listing) => (
-                <ListingItem
-                  key={listing.id}
-                  listing={listing.data}
-                  id={listing.id}
-                />
-              ))}
-            </ul>
-          </div>
-        )}
-        {saleListings && saleListings.length > 0 && (
-          <div className="m-2 mb-6  text-center">
-            <h2 className="px-3 text-2xl mt-6 mb-3 font-semibold">
-              Places for sale
-            </h2>
-            <Link to="/category/sale">
-              <a
-                href="#_"
-                class="relative rounded px-5 py-2 mx-3 bottom-1 overflow-hidden group bg-blue-500 relative hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-blue-400 transition-all ease-out duration-300"
-              >
-                <span class="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-                <span class="relative">Show more places for sale</span>
-              </a>
-            </Link>
-            <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
-              {saleListings.map((listing) => (
-                <ListingItem
-                  key={listing.id}
-                  listing={listing.data}
-                  id={listing.id}
-                />
-              ))}
-            </ul>
-          </div>
-        )}
+                Contact Landlord
+              </button>
+            </div>
+          )}
+          {contactLandlord && (
+            <Contact userRef={listing.userRef} listing={listing} />
+          )}
+        </div>
+        <div className="w-full h-[200px] md:h-[400px] z-10 overflow-x-hidden mt-6 md:mt-0 md:ml-2">
+          <MapContainer
+            center={[listing.geolocation.lat, listing.geolocation.lng]}
+            zoom={13}
+            scrollWheelZoom={false}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker
+              position={[listing.geolocation.lat, listing.geolocation.lng]}
+            >
+              <Popup>{listing.address}</Popup>
+            </Marker>
+          </MapContainer>
+        </div>
       </div>
-    </div>
+    </>
+  ) : (
+    <div className="w-full text-center bg-white p-6 rounded-lg shadow-lg">
+    <p className="text-xl font-semibold mb-3">
+      To view details, please log in.
+    </p>
+    <Link
+      to="/sign-in"
+      className="bg-blue-600 text-white py-3 px-6 rounded-md shadow-md hover:bg-blue-700 focus:bg-blue-700 transition duration-150 ease-in-out"
+    >
+      Sign In
+    </Link>
+  </div>
+  
+  )}
+    </main>
   );
 }
