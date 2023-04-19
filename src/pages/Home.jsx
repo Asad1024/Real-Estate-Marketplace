@@ -132,31 +132,35 @@ useEffect(() => {
       <Slider />
       {user ? (
         <>
-         <div style={{ display: "flex", justifyContent: "flex-end" }} className="mr-4 mt-3">
-      <select
-        onChange={(e) => setSearchQuery(e.target.value)}
-        value={searchQuery}
->
-  <option value="">Select</option>
-  <option value="Lahore">Lahore</option>
-  <option value="Bahawalpur">Bahawalpur</option>
-  <option value="Hasilpur">Hasilpur</option>
-  <option value="Islamabad">Islamabad</option>
-  <option value="Bahawalnagar">Bahawalnagar</option>
-  <option value="Khair Pur">Khair Pur</option>
-  <option value="Multan">Multan</option>
-  <option value="	Faisalabad">	Faisalabad</option>
-  <option value="	Rahim Yar Khan">	Rahim Yar Khan</option>
-  <option value="	Chishtian">	Chishtian</option>
-</select>
-      <input
-          type="text"
-           placeholder="City Name"
-            value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          />
-
-      </div>
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", margin : "10px" }}>
+  <label htmlFor="searchInput" style={{ marginBottom: "5px" }}>Enter City Name:</label>
+  <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+    <select
+      style={{ width: "50%", marginRight: "5px", fontSize: "16px" }}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      value={searchQuery}
+    >
+      <option value="">Select</option>
+      <option value="Lahore">Lahore</option>
+      <option value="Bahawalpur">Bahawalpur</option>
+      <option value="Hasilpur">Hasilpur</option>
+      <option value="Islamabad">Islamabad</option>
+      <option value="Bahawalnagar">Bahawalnagar</option>
+      <option value="Khair Pur">Khair Pur</option>
+      <option value="Multan">Multan</option>
+      <option value="Faisalabad">Faisalabad</option>
+      <option value="Rahim Yar Khan">Rahim Yar Khan</option>
+      <option value="Chishtian">Chishtian</option>
+    </select>
+    <input
+      style={{ width: "50%", fontSize: "16px" }}
+      type="text"
+      placeholder="City Name"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+    />
+  </div>
+</div>
         </>
       ) : (
         <>
