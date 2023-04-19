@@ -27,10 +27,15 @@ import { BsWhatsapp } from "react-icons/bs";
 import { MdDialerSip } from "react-icons/md";
 import { useContext } from "react";
 import { DarkModeContext } from "../App";
+import { Link } from "react-router-dom";
 
 export default function Listing(props) {
   const darkMode = useContext(DarkModeContext);
   const auth = getAuth();
+  const user = auth.currentUser;
+  if (user) {
+  } else {
+  }
   const params = useParams();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -52,8 +57,11 @@ export default function Listing(props) {
     return <Spinner />;
   }
 
+  
+
   return (
     <main>
+
       <Swiper
         slidesPerView={1}
         navigation
@@ -92,7 +100,9 @@ export default function Listing(props) {
         </p>
       )}
 
-      <div
+{user ? (
+    <>
+       <div
         className={`m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg shadow-lg bg-white lg:space-x-5 ${
           darkMode
             ? "bg-gray-800 text-indigo-100"
@@ -185,6 +195,21 @@ export default function Listing(props) {
           </MapContainer>
         </div>
       </div>
+    </>
+  ) : (
+    <div className="w-full text-center bg-white p-6 rounded-lg shadow-lg">
+    <p className="text-xl font-semibold mb-3">
+      To view details, please log in.
+    </p>
+    <Link
+      to="/sign-in"
+      className="bg-blue-600 text-white py-3 px-6 rounded-md shadow-md hover:bg-blue-700 focus:bg-blue-700 transition duration-150 ease-in-out"
+    >
+      Sign In
+    </Link>
+  </div>
+  
+  )}
     </main>
   );
 }
