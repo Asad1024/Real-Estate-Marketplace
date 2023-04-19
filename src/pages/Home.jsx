@@ -1,3 +1,4 @@
+
 import {
   collection,
   getDoc,
@@ -13,38 +14,51 @@ import { Link } from "react-router-dom";
 import ListingItem from "../components/ListingItem";
 import Slider from "../components/Slider";
 import { db } from "../firebase";
+import { getAuth } from "firebase/auth";
 
 export default function Home() {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (user) {
+  } else {
+  }
   // Offers
-  const [offerListings, setOfferListings] = useState(null);
-  useEffect(() => {
-    async function fetchListings() {
-      try {
-        // get reference
-        const listingsRef = collection(db, "listings");
-        // create the query
-        const q = query(
-          listingsRef,
-          where("offer", "==", true),
-          orderBy("timestamp", "desc"),
-          limit(4)
-        );
-        // execute the query
-        const querySnap = await getDocs(q);
-        const listings = [];
-        querySnap.forEach((doc) => {
-          return listings.push({
-            id: doc.id,
-            data: doc.data(),
-          });
+   const [searchQuery, setSearchQuery] = useState("");
+ const [offerListings, setOfferListings] = useState(null);
+
+useEffect(() => {
+  async function fetchListings() {
+    try {
+      // get reference
+      const listingsRef = collection(db, "listings");
+      // create the query
+      const q = query(
+        listingsRef,
+        where("offer", "==", true),
+        orderBy("timestamp", "desc"),
+        limit(4)
+      );
+      // execute the query
+      const querySnap = await getDocs(q);
+      const listings = [];
+      querySnap.forEach((doc) => {
+        return listings.push({
+          id: doc.id,
+          data: doc.data(),
         });
-        setOfferListings(listings);
-      } catch (error) {
-        console.log(error);
-      }
+      });
+      // filter the listings array
+      const filteredListings = listings.filter((listing) =>
+        listing.data.address.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setOfferListings(filteredListings);
+    } catch (error) {
+      console.log(error);
     }
-    fetchListings();
-  }, []);
+  }
+  fetchListings();
+}, [searchQuery]);
+
   // Places for rent
   const [rentListings, setRentListings] = useState(null);
   useEffect(() => {
@@ -68,14 +82,18 @@ export default function Home() {
             data: doc.data(),
           });
         });
-        setRentListings(listings);
+         // filter the listings array
+      const filteredListings = listings.filter((listing) =>
+      listing.data.address.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+        setRentListings(filteredListings);
       } catch (error) {
         console.log(error);
       }
     }
     fetchListings();
-  }, []);
-  // Places for rent
+  }, [searchQuery]);
+  // Places for sale
   const [saleListings, setSaleListings] = useState(null);
   useEffect(() => {
     async function fetchListings() {
@@ -98,16 +116,53 @@ export default function Home() {
             data: doc.data(),
           });
         });
-        setSaleListings(listings);
+           // filter the listings array
+      const filteredListings = listings.filter((listing) =>
+      listing.data.address.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+        setSaleListings(filteredListings);
       } catch (error) {
         console.log(error);
       }
     }
     fetchListings();
-  }, []);
+  }, [searchQuery]);
   return (
     <div>
       <Slider />
+      {user ? (
+        <>
+         <div style={{ display: "flex", justifyContent: "flex-end" }} className="mr-4 mt-3">
+      <select
+        onChange={(e) => setSearchQuery(e.target.value)}
+        value={searchQuery}
+>
+  <option value="">Select</option>
+  <option value="Lahore">Lahore</option>
+  <option value="Bahawalpur">Bahawalpur</option>
+  <option value="Hasilpur">Hasilpur</option>
+  <option value="Islamabad">Islamabad</option>
+  <option value="Bahawalnagar">Bahawalnagar</option>
+  <option value="Khair Pur">Khair Pur</option>
+  <option value="Multan">Multan</option>
+  <option value="	Faisalabad">	Faisalabad</option>
+  <option value="	Rahim Yar Khan">	Rahim Yar Khan</option>
+  <option value="	Chishtian">	Chishtian</option>
+</select>
+      <input
+          type="text"
+           placeholder="City Name"
+            value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          />
+
+      </div>
+        </>
+      ) : (
+        <>
+        
+        </>
+      )}
       <div className="max-w-6xl mx-auto pt-4 space-y-6">
         {offerListings && offerListings.length > 0 && (
           <div className="m-2 mb-6 text-center">
