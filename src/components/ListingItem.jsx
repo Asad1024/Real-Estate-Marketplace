@@ -27,7 +27,7 @@ export default function ListingItem({ listing, id, onEdit, onDelete }) {
         >
           {listing.timestamp?.toDate()}
         </Moment>
-        {user ? (
+
     <>
        <div
           className={`w-full p-[10px] ${
@@ -70,21 +70,6 @@ export default function ListingItem({ listing, id, onEdit, onDelete }) {
           </div>
         </div>
     </>
-  ) : (
-    <div className="w-full text-center bg-white p-6 rounded-lg shadow-lg">
-    <p className="text-xl font-semibold mb-3">
-      To view details, please log in.
-    </p>
-    <Link
-      to="/sign-in"
-      className="bg-blue-600 text-white py-3 px-6 rounded-md shadow-md hover:bg-blue-700 focus:bg-blue-700 transition duration-150 ease-in-out"
-    >
-      Sign In
-    </Link>
-  </div>
-  
-  )}
-
       </Link>
       {onDelete && (
         <FaTrash
