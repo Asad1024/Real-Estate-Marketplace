@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import shareVideo from "../assests/share.mp4";
+import shareVideo from "../assests/share1.mp4";
 import logo from "../assests/svg/2.png";
 import { Link } from "react-router-dom";
 import OAuth from "../components/OAuth";
