@@ -100,7 +100,6 @@ export default function Listing(props) {
         </p>
       )}
 
-{user ? (
     <>
        <div
         className={`m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg shadow-lg bg-white lg:space-x-5 ${
@@ -139,10 +138,10 @@ export default function Listing(props) {
             <span className="font-semibold">Description : </span>
             {listing.description}
           </p>
-          <p className="mt-3 mb-3">
+          {/* <p className="mt-3 mb-3">
             <span className="font-semibold">Contact No : </span>
             {listing.contact}
-          </p>
+          </p> */}
 
           <ul className="flex items-center space-x-2 sm:space-x-10 text-sm font-semibold mb-6">
             <li className="flex items-center whitespace-nowrap">
@@ -164,12 +163,22 @@ export default function Listing(props) {
           </ul>
           {listing.userRef !== auth.currentUser?.uid && !contactLandlord && (
             <div className="mt-6">
-              <button
-                onClick={() => setContactLandlord(true)}
+              {user ? (
+                 <button
+                 onClick={() => setContactLandlord(true)}
+                 className="px-7 py-3 bg-blue-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg w-full text-center transition duration-150 ease-in-out "
+               >
+                 Contact Landlord
+               </button>
+              ) : (
+               <Link to="/sign-in">
+                <button
                 className="px-7 py-3 bg-blue-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg w-full text-center transition duration-150 ease-in-out "
               >
                 Contact Landlord
               </button>
+               </Link>
+              )}
             </div>
           )}
           {contactLandlord && (
@@ -196,20 +205,7 @@ export default function Listing(props) {
         </div>
       </div>
     </>
-  ) : (
-    <div className="w-full text-center bg-white p-6 rounded-lg shadow-lg">
-    <p className="text-xl font-semibold mb-3">
-      To view details, please log in.
-    </p>
-    <Link
-      to="/sign-in"
-      className="bg-blue-600 text-white py-3 px-6 rounded-md shadow-md hover:bg-blue-700 focus:bg-blue-700 transition duration-150 ease-in-out"
-    >
-      Sign In
-    </Link>
-  </div>
   
-  )}
     </main>
   );
 }
