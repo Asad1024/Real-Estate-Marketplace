@@ -130,9 +130,8 @@ useEffect(() => {
   return (
     <div>
       <Slider />
-      {user ? (
         <>
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", margin : "10px" }}>
+   <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", margin : "10px" }}>
   <label htmlFor="searchInput" style={{ marginBottom: "5px" }}>Enter City Name:</label>
   <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
     <select
@@ -141,10 +140,8 @@ useEffect(() => {
       value={searchQuery}
     >
       <option value="">Select</option>
-      <option value="Lahore">Lahore</option>
       <option value="Bahawalpur">Bahawalpur</option>
       <option value="Hasilpur">Hasilpur</option>
-      <option value="Islamabad">Islamabad</option>
       <option value="Bahawalnagar">Bahawalnagar</option>
       <option value="Khair Pur">Khair Pur</option>
       <option value="Multan">Multan</option>
@@ -162,11 +159,6 @@ useEffect(() => {
   </div>
 </div>
         </>
-      ) : (
-        <>
-        
-        </>
-      )}
       <div className="max-w-6xl mx-auto pt-4 space-y-6">
         {offerListings && offerListings.length > 0 && (
           <div className="m-2 mb-6 text-center">
