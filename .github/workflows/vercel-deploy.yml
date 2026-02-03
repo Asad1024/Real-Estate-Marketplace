@@ -1,0 +1,21 @@
+# Trigger Vercel deploy on push to main (use when Vercel Git auto-deploy is not working)
+# Setup: Vercel → Project → Settings → Git → Deploy Hooks → Create hook → copy URL
+#        GitHub → Repo → Settings → Secrets → Actions → Add VERCEL_DEPLOY_HOOK = that URL
+name: Trigger Vercel Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel Deploy Hook
+        run: |
+          if [ -n "${{ secrets.VERCEL_DEPLOY_HOOK }}" ]; then
+            curl -fsS -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+            echo "Vercel deploy triggered."
+          else
+            echo "VERCEL_DEPLOY_HOOK secret not set. Add it in repo Secrets to enable auto-deploy."
+          fi
