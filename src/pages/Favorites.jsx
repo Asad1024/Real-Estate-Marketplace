@@ -9,6 +9,7 @@ import { HiOutlineHeart } from "react-icons/hi";
 export default function Favorites() {
   const favorites = useFavoritesContext();
   const favoriteIds = useMemo(() => favorites?.favoriteIds ?? [], [favorites?.favoriteIds]);
+  const favoriteIdsKey = useMemo(() => favoriteIds.join(","), [favoriteIds]);
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,7 +36,8 @@ export default function Favorites() {
     }
     fetchListings();
     return () => { cancelled = true; };
-  }, [favoriteIds]);
+    // favoriteIdsKey is stable primitive; favoriteIds used inside effect
+  }, [favoriteIdsKey, favoriteIds]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
