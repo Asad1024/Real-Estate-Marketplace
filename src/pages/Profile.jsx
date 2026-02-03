@@ -19,7 +19,6 @@ import {
   HiOutlineLogout,
   HiOutlinePlusCircle,
   HiOutlineHome,
-  HiOutlineUser,
 } from "react-icons/hi";
 
 export default function Profile() {

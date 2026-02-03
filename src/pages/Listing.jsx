@@ -1,5 +1,5 @@
 import { doc, getDoc } from "firebase/firestore";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
@@ -9,7 +9,6 @@ import "swiper/css/bundle";
 import { getAuth } from "firebase/auth";
 import Contact from "../components/Contact";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import { DarkModeContext } from "../App";
 import { useRecentlyViewed } from "../hooks/useRecentlyViewed";
 import { HiOutlineShare, HiOutlineLocationMarker, HiOutlineChevronLeft } from "react-icons/hi";
 import { FaBed, FaBath, FaParking, FaChair } from "react-icons/fa";
@@ -17,7 +16,6 @@ import { FaBed, FaBath, FaParking, FaChair } from "react-icons/fa";
 SwiperCore.use([Autoplay, Navigation, Pagination]);
 
 export default function Listing() {
-  const darkMode = useContext(DarkModeContext);
   const auth = getAuth();
   const user = auth.currentUser;
   const params = useParams();

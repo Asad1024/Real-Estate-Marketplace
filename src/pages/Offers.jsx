@@ -10,7 +10,6 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import Spinner from "../components/Spinner";
 import ListingItem from "../components/ListingItem";
 import FilterBar, { defaultFilters } from "../components/FilterBar";
 import { applyListingFilters } from "../utils/listingFilters";
