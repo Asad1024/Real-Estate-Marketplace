@@ -1,81 +1,86 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import OAuth from "../components/OAuth";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { toast } from "react-toastify";
-const ForgotPassword = () => {
+
+export default function ForgotPassword() {
   const [email, setEmail] = useState("");
 
-  function onChange(e) {
-    setEmail(e.target.value);
-  }
-  async function onSubmit(e) {
+  const onChange = (e) => setEmail(e.target.value);
+
+  const onSubmit = async (e) => {
     e.preventDefault();
     try {
       const auth = getAuth();
       await sendPasswordResetEmail(auth, email);
-      toast.success("Email was sent");
+      toast.success("Reset link sent to your email");
     } catch (error) {
-      toast.error("Could not send reset password");
+      toast.error("Could not send reset email");
     }
-  }
+  };
 
   return (
-    <section>
-      <h1 className="text-3xl text-center mt-6 font-bold">Forgot Password</h1>
-      <div className="flex justify-center flex-wrap items-center px-6 py-12 max-w-6xl mx-auto">
-        <div className="md:w-[67%] lg:w-[45%] mb-12 md:mb-6">
-          <img
-            src="https://images.unsplash.com/flagged/photo-1564767609342-620cb19b2357?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1373&q=80"
-            alt="key"
-            className="w-full rounded-2xl"
-          />
-        </div>
-        <div className="w-full md:w-[67%] lg:w-[40%] lg:ml-20">
-          <form onSubmit={onSubmit}>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={onChange}
-              placeholder="Email address"
-              className="mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out"
-            />
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 sm:p-10">
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+              Forgot password?
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
+              Enter your email and we&apos;ll send you a reset link
+            </p>
+          </div>
 
-            <div className="flex justify-between whitespace-nowrap text-sm font-semibold sm:text-lg">
-              <p className="mb-6">
-                Don't have a account?
-                <Link
-                  to="/sign-up"
-                  className="text-red-600 hover:text-red-700 transition duration-200 ease-in-out ml-1"
-                >
-                  Register
-                </Link>
-              </p>
-              <p>
-                <Link
-                  to="/sign-in"
-                  className="text-blue-600 hover:text-blue-800 transition duration-200 ease-in-out"
-                >
-                  Sign in instead
-                </Link>
-              </p>
+          <form onSubmit={onSubmit} className="space-y-5">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={onChange}
+                placeholder="you@example.com"
+                required
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+              />
             </div>
+
             <button
-              className="w-full bg-blue-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md hover:bg-blue-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-blue-800"
               type="submit"
+              className="w-full py-3.5 rounded-xl bg-primary-500 text-white font-semibold text-sm shadow-lg hover:bg-primary-600 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 active:scale-[0.98] transition-all"
             >
-              Send reset password
+              Send reset link
             </button>
-            <div className="flex items-center  my-4 before:border-t before:flex-1 before:border-gray-300 after:border-t after:flex-1 after:border-gray-300">
-              <p className="text-center font-semibold mx-4">OR</p>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200 dark:border-slate-600" />
+              </div>
+              <div className="relative flex justify-center">
+                <span className="px-3 text-xs font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800">
+                  or continue with
+                </span>
+              </div>
             </div>
+
             <OAuth />
           </form>
+
+          <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
+            Remember your password?{" "}
+            <Link
+              to="/sign-in"
+              className="font-semibold text-primary-600 dark:text-primary-400 hover:underline"
+            >
+              Sign in
+            </Link>
+          </p>
         </div>
       </div>
-    </section>
+    </div>
   );
-};
-
-export default ForgotPassword;
+}

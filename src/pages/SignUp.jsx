@@ -1,139 +1,193 @@
 import { useState } from "react";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { db } from "../firebase";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import logo from "../assests/svg/2.png";
+import { HiShieldCheck, HiHome, HiOutlineDocumentText, HiOutlineUserGroup, HiOutlineCheckCircle, HiOutlineCurrencyDollar } from "react-icons/hi";
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [loading, setLoading] = useState(false);
   const { name, email, password } = formData;
   const navigate = useNavigate();
-  function onChange(e) {
-    setFormData((prevState) => ({
-      ...prevState,
-      [e.target.id]: e.target.value,
-    }));
-  }
-  async function onSubmit(e) {
-    e.preventDefault();
 
+  const onChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
     try {
       const auth = getAuth();
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password,
-        updateProfile
-      );
-      updateProfile(auth.currentUser, {
-        displayName: name,
-      });
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(auth.currentUser, { displayName: name });
       const user = userCredential.user;
       const formDataCopy = { ...formData };
       delete formDataCopy.password;
       formDataCopy.timestamp = serverTimestamp();
-
       await setDoc(doc(db, "users", user.uid), formDataCopy);
       navigate("/");
     } catch (error) {
-      toast.error("Something went wrong with the registration");
+      toast.error("Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+
   return (
-    <section>
-      <h1 className="text-3xl text-center mt-6 font-bold">Sign Up</h1>
-      <div className="flex justify-center flex-wrap items-center px-6 py-12 max-w-6xl mx-auto">
-        <div className="md:w-[67%] lg:w-[45%] mb-12 md:mb-6">
-          <img
-            src="https://images.unsplash.com/photo-1618060932014-4deda4932554?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzJ8fGxvY2t8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60"
-            alt="key"
-            className="w-full rounded-2xl"
-          />
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Left: professional info */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gradient-to-br from-primary-600 to-primary-800 p-10 xl:p-14 text-white">
+        <div>
+          <h2 className="text-xl xl:text-2xl font-semibold tracking-tight mb-2">Create account</h2>
+          <p className="text-white/90 text-sm max-w-sm leading-relaxed mb-6">
+            Join House Market to list, browse, and connect — free to register.
+          </p>
+          <p className="text-white/70 text-xs font-medium uppercase tracking-wider mb-4">What you get</p>
+          <ul className="space-y-3 text-white/90 text-sm">
+            <li className="flex items-center gap-3">
+              <span className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+                <HiHome className="w-4 h-4 text-primary-200" />
+              </span>
+              List properties for rent or sale with photos and details
+            </li>
+            <li className="flex items-center gap-3">
+              <span className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+                <HiOutlineCurrencyDollar className="w-4 h-4 text-primary-200" />
+              </span>
+              Free to join — no listing fees to get started
+            </li>
+            <li className="flex items-center gap-3">
+              <span className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+                <HiOutlineDocumentText className="w-4 h-4 text-primary-200" />
+              </span>
+              Save favorites and get updates on new listings
+            </li>
+            <li className="flex items-center gap-3">
+              <span className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+                <HiOutlineUserGroup className="w-4 h-4 text-primary-200" />
+              </span>
+              Message buyers and renters directly from your dashboard
+            </li>
+            <li className="flex items-center gap-3">
+              <span className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+                <HiShieldCheck className="w-4 h-4 text-primary-200" />
+              </span>
+              Secure account — industry-standard authentication
+            </li>
+          </ul>
+          <div className="mt-8 pt-6 border-t border-white/15">
+            <p className="text-white/70 text-xs font-medium uppercase tracking-wider mb-3">Trust & security</p>
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-white/85 text-xs">
+              <span className="flex items-center gap-1.5">
+                <HiOutlineCheckCircle className="w-4 h-4 text-primary-200 shrink-0" />
+                Secure login
+              </span>
+              <span className="flex items-center gap-1.5">
+                <HiOutlineCheckCircle className="w-4 h-4 text-primary-200 shrink-0" />
+                Private data
+              </span>
+              <span className="flex items-center gap-1.5">
+                <HiOutlineCheckCircle className="w-4 h-4 text-primary-200 shrink-0" />
+                No spam
+              </span>
+            </div>
+          </div>
         </div>
-        <div className="w-full md:w-[67%] lg:w-[40%] lg:ml-20">
-          <form onSubmit={onSubmit}>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={onChange}
-              placeholder="Full name"
-              className="mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out"
-            />
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={onChange}
-              placeholder="Email address"
-              className="mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out"
-            />
-            <div className="relative mb-6">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                value={password}
-                onChange={onChange}
-                placeholder="Password"
-                className="w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out"
-              />
-              {showPassword ? (
-                <AiFillEyeInvisible
-                  className="absolute right-3 top-3 text-xl cursor-pointer"
-                  onClick={() => setShowPassword((prevState) => !prevState)}
+        <p className="text-white/50 text-xs pt-6 border-t border-white/10 shrink-0">House Market — Real estate marketplace</p>
+      </div>
+
+      {/* Right: form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-6 sm:p-10">
+        <div className="w-full max-w-md">
+          <div className="lg:hidden text-center mb-8">
+            <img src={logo} alt="Logo" className="h-10 mx-auto opacity-95" />
+          </div>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 sm:p-10">
+            <div className="mb-8">
+              <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Create an account</h1>
+              <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">Get started with your free account in seconds</p>
+            </div>
+
+            <form onSubmit={onSubmit} className="space-y-5">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Full name</label>
+                <input
+                  type="text"
+                  id="name"
+                  value={name}
+                  onChange={onChange}
+                  placeholder="John Doe"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                 />
-              ) : (
-                <AiFillEye
-                  className="absolute right-3 top-3 text-xl cursor-pointer"
-                  onClick={() => setShowPassword((prevState) => !prevState)}
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email address</label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={onChange}
+                  placeholder="name@example.com"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                 />
-              )}
-            </div>
-            <div className="flex justify-between whitespace-nowrap text-sm font-semibold sm:text-lg">
-              <p className="mb-6">
-                Have a account?
-                <Link
-                  to="/sign-in"
-                  className="text-red-600 hover:text-red-700 transition duration-200 ease-in-out ml-1"
-                >
-                  Sign in
-                </Link>
-              </p>
-              <p>
-                <Link
-                  to="/forgot-password"
-                  className="text-blue-600 hover:text-blue-800 transition duration-200 ease-in-out"
-                >
-                  Forgot password?
-                </Link>
-              </p>
-            </div>
-            <button
-              className="w-full bg-blue-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md hover:bg-blue-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-blue-800"
-              type="submit"
-            >
-              Sign up
-            </button>
-            <div className="flex items-center  my-4 before:border-t before:flex-1 before:border-gray-300 after:border-t after:flex-1 after:border-gray-300">
-              <p className="text-center font-semibold mx-4">OR</p>
-            </div>
-            <OAuth />
-          </form>
+              </div>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    value={password}
+                    onChange={onChange}
+                    placeholder="••••••••"
+                    required
+                    minLength={6}
+                    className="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <AiFillEyeInvisible className="w-5 h-5" /> : <AiFillEye className="w-5 h-5" />}
+                  </button>
+                </div>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">At least 6 characters</p>
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 rounded-xl bg-primary-500 text-white font-semibold text-sm shadow-lg hover:bg-primary-600 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+              >
+                {loading ? "Creating account..." : "Create account"}
+              </button>
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-slate-200 dark:border-slate-600" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="px-3 text-xs font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800">or continue with</span>
+                </div>
+              </div>
+              <OAuth />
+            </form>
+            <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
+              Already have an account?{" "}
+              <Link to="/sign-in" className="font-semibold text-primary-600 dark:text-primary-400 hover:underline">Sign in</Link>
+            </p>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

@@ -9,13 +9,18 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { db } from "../firebase";
-import { FcHome } from "react-icons/fc";
-import { useEffect } from "react";
 import ListingItem from "../components/ListingItem";
+import {
+  HiOutlinePencil,
+  HiOutlineLogout,
+  HiOutlinePlusCircle,
+  HiOutlineHome,
+  HiOutlineUser,
+} from "react-icons/hi";
 
 export default function Profile() {
   const auth = getAuth();
@@ -23,43 +28,58 @@ export default function Profile() {
   const [changeDetail, setChangeDetail] = useState(false);
   const [listings, setListings] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
-    name: auth.currentUser.displayName,
-    email: auth.currentUser.email,
-    image: auth.currentUser.photoURL,
+    name: auth.currentUser?.displayName ?? "",
+    email: auth.currentUser?.email ?? "",
+    image: auth.currentUser?.photoURL ?? "",
   });
 
   const { name, email, image } = formData;
-  function onLogout() {
+
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      name: auth.currentUser?.displayName ?? "",
+      email: auth.currentUser?.email ?? "",
+      image: auth.currentUser?.photoURL ?? "",
+    }));
+  }, [auth.currentUser]);
+
+  const onLogout = () => {
     auth.signOut();
     navigate("/");
-  }
-  function onChange(e) {
-    setFormData((prevState) => ({
-      ...prevState,
+  };
+
+  const onChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
       [e.target.id]: e.target.value,
     }));
-  }
-  async function onSubmit() {
+  };
+
+  const onSubmit = async () => {
+    setSaving(true);
     try {
       if (auth.currentUser.displayName !== name) {
-        //update display name in firebase auth
-        await updateProfile(auth.currentUser, {
-          displayName: name,
-        });
-
-        // update name in the firestore
-
+        await updateProfile(auth.currentUser, { displayName: name });
         const docRef = doc(db, "users", auth.currentUser.uid);
-        await updateDoc(docRef, {
-          name,
-        });
+        await updateDoc(docRef, { name });
       }
-      toast.success("Profile details updated");
+      toast.success("Profile updated");
+      setChangeDetail(false);
     } catch (error) {
-      toast.error("Could not update the profile details");
+      toast.error("Could not update profile");
+    } finally {
+      setSaving(false);
     }
-  }
+  };
+
+  const toggleEdit = () => {
+    if (changeDetail) onSubmit();
+    setChangeDetail((prev) => !prev);
+  };
+
   useEffect(() => {
     async function fetchUserListings() {
       const listingRef = collection(db, "listings");
@@ -69,107 +89,142 @@ export default function Profile() {
         orderBy("timestamp", "desc")
       );
       const querySnap = await getDocs(q);
-      let listings = [];
-      querySnap.forEach((doc) => {
-        return listings.push({
-          id: doc.id,
-          data: doc.data(),
-        });
-      });
-      setListings(listings);
+      const list = [];
+      querySnap.forEach((docSnap) =>
+        list.push({ id: docSnap.id, data: docSnap.data() })
+      );
+      setListings(list);
       setLoading(false);
     }
     fetchUserListings();
-  }, [auth.currentUser.uid]);
-  async function onDelete(listingID) {
-    if (window.confirm("Are you sure you want to delete?")) {
+  }, [auth.currentUser?.uid]);
+
+  const onDelete = async (listingID) => {
+    if (!window.confirm("Are you sure you want to delete this listing?")) return;
+    try {
       await deleteDoc(doc(db, "listings", listingID));
-      const updatedListings = listings.filter(
-        (listing) => listing.id !== listingID
-      );
-      setListings(updatedListings);
-      toast.success("Successfully deleted the listing");
+      setListings((prev) => prev.filter((listing) => listing.id !== listingID));
+      toast.success("Listing deleted");
+    } catch (error) {
+      toast.error("Could not delete listing");
     }
-  }
-  function onEdit(listingID) {
+  };
+
+  const onEdit = (listingID) => {
     navigate(`/edit-listing/${listingID}`);
-  }
+  };
+
   return (
-    <>
-      <section className="max-w-6xl mx-auto flex justify-center items-center flex-col">
-        <h1 className="text-3xl text-center mt-6 font-bold">My Profile</h1>
-        <img
-          className="w-30 h-30 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500 mt-4"
-          src={image}
-          alt="Rounded avatar"
-        />
-        <div className="w-full md:w-[50%] mt-6 px-3">
-          <form>
-            {/* Name Input */}
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        {/* Profile card */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden mb-8">
+          <div className="p-6 sm:p-8">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+              <div className="relative shrink-0">
+                <img
+                  src={image || "https://ui-avatars.com/api/?name=User&background=0ea5e9&color=fff"}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-2xl object-cover ring-4 ring-slate-100 dark:ring-slate-700"
+                />
+              </div>
+              <div className="flex-1 w-full text-center sm:text-left">
+                <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-1">
+                  My profile
+                </h1>
+                <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">
+                  Manage your account and listings
+                </p>
 
-            <input
-              type="text"
-              id="name"
-              value={name}
-              disabled={!changeDetail}
-              onChange={onChange}
-              className={`mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition ease-in-out ${
-                changeDetail && "bg-red-200 focus:bg-red-200"
-              }`}
-            />
+                <div className="space-y-4 max-w-md">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      Display name
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        id="name"
+                        value={name}
+                        disabled={!changeDetail}
+                        onChange={onChange}
+                        className={`w-full px-4 py-3 rounded-xl border bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
+                          changeDetail
+                            ? "border-primary-300 dark:border-primary-600"
+                            : "border-slate-200 dark:border-slate-600"
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={toggleEdit}
+                        disabled={saving}
+                        className="shrink-0 flex items-center justify-center w-12 h-12 rounded-xl border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-primary-600 dark:hover:text-primary-400 transition-colors disabled:opacity-70"
+                        aria-label={changeDetail ? "Save name" : "Edit name"}
+                      >
+                        <HiOutlinePencil className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      readOnly
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 cursor-not-allowed"
+                    />
+                  </div>
+                </div>
 
-            {/* Email Input */}
+                <div className="flex flex-wrap items-center gap-4 mt-6">
+                  <button
+                    type="button"
+                    onClick={onLogout}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 font-medium text-sm transition-colors"
+                  >
+                    <HiOutlineLogout className="w-5 h-5" />
+                    Sign out
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <input
-              type="email"
-              id="email"
-              value={email}
-              disabled
-              className="mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition ease-in-out"
-            />
+        {/* List property CTA */}
+        <Link
+          to="/create-listing"
+          className="flex items-center justify-center gap-3 w-full py-4 rounded-2xl bg-primary-500 text-white font-semibold text-base shadow-lg hover:bg-primary-600 transition-all mb-8"
+        >
+          <HiOutlinePlusCircle className="w-6 h-6" />
+          List a property
+        </Link>
 
-            <div className="flex justify-between whitespace-nowrap text-sm font-semibold sm:text-lg mb-6">
-              <p className="flex items-center ">
-                Do you want to change your name?
-                <span
-                  onClick={() => {
-                    changeDetail && onSubmit();
-                    setChangeDetail((prevState) => !prevState);
-                  }}
-                  className="text-red-600 hover:text-red-700 transition ease-in-out duration-200 ml-1 cursor-pointer"
-                >
-                  {changeDetail ? "Apply change" : "Edit"}
-                </span>
-              </p>
-              <p
-                onClick={onLogout}
-                className="text-blue-600 hover:text-blue-800 transition duration-200 ease-in-out cursor-pointer"
-              >
-                Sign out
+        {/* My listings */}
+        <div>
+          <div className="flex items-center gap-3 mb-6">
+            <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary-500/10 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400">
+              <HiOutlineHome className="w-5 h-5" />
+            </span>
+            <div>
+              <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">
+                My listings
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {loading ? "Loading..." : listings?.length ? `${listings.length} listing${listings.length !== 1 ? "s" : ""}` : "No listings yet"}
               </p>
             </div>
-          </form>
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-blue-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-blue-800"
-          >
-            <Link
-              to="/create-listing"
-              className="flex justify-center items-center"
-            >
-              <FcHome className="mr-2 text-3xl bg-red-200 rounded-full p-1 border-2" />
-              Sell or rent your home
-            </Link>
-          </button>
-        </div>
-      </section>
-      <div className="max-w-6xl px-3 mt-6 mx-auto">
-        {!loading && listings.length > 0 && (
-          <>
-            <h2 className="text-2xl text-center font-semibold mb-6">
-              My Listings
-            </h2>
-            <ul className="sm:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          </div>
+
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+              <p className="mt-4 text-slate-500 dark:text-slate-400 text-sm">Loading your listings...</p>
+            </div>
+          ) : listings && listings.length > 0 ? (
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {listings.map((listing) => (
                 <ListingItem
                   key={listing.id}
@@ -180,9 +235,28 @@ export default function Profile() {
                 />
               ))}
             </ul>
-          </>
-        )}
+          ) : (
+            <div className="text-center py-16 px-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+              <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center mx-auto mb-4">
+                <HiOutlineHome className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2">
+                No listings yet
+              </h3>
+              <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 max-w-sm mx-auto">
+                List your first property to reach buyers and renters.
+              </p>
+              <Link
+                to="/create-listing"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-500 text-white font-semibold text-sm hover:bg-primary-600 transition-colors"
+              >
+                <HiOutlinePlusCircle className="w-5 h-5" />
+                List a property
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
-    </>
+    </div>
   );
 }

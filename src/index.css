@@ -1,44 +1,109 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background-color: rgb(240, 253, 244);
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-color: #e2e8f0;
+  --accent: #0ea5e9;
+  --accent-hover: #0284c7;
 }
 
+.dark-mode,
+.dark {
+  --bg-primary: #1e293b;
+  --bg-secondary: #0f172a;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --border-color: #334155;
+  --accent: #38bdf8;
+  --accent-hover: #7dd3fc;
+}
+
+body {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Swiper overrides */
 .swiper-button-next:after,
 .swiper-button-prev:after {
-  color: #a8dadc;
+  color: #0ea5e9;
+  font-weight: bold;
 }
 
 .swiper-pagination-progressbar .swiper-pagination-progressbar-fill {
-  background: #a8dadc !important;
+  background: linear-gradient(90deg, #0ea5e9, #10b981) !important;
 }
 
+.dark-mode .swiper-button-next:after,
+.dark-mode .swiper-button-prev:after {
+  color: #38bdf8;
+}
+
+/* Scrollbar - subtle */
 html::-webkit-scrollbar {
-  display: none;
+  width: 8px;
+  height: 8px;
+}
+
+html::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+html::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.dark-mode html::-webkit-scrollbar-thumb {
+  background: #475569;
 }
 
 html {
-  scrollbar-width: none;
-}
-body {
-  background-color: #fff;
-  color: #2d3748;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 var(--bg-secondary);
 }
 
-.dark-mode {
-  background-color: #2d3748;
-  color: #fff;
+/* Form elements in dark mode */
+.dark-mode select,
+.dark select {
+  background-color: #334155;
+  color: #f1f5f9;
+  border-color: #475569;
 }
 
-.dark-mode select {
-  background-color: #4a5568;
-  color: #fff;
+.dark-mode input[type="text"],
+.dark-mode input[type="number"],
+.dark-mode input[type="email"],
+.dark-mode input[type="password"],
+.dark-mode textarea,
+.dark input[type="text"],
+.dark input[type="number"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark textarea {
+  background-color: #334155;
+  color: #f1f5f9;
+  border-color: #475569;
+}
+
+.dark-mode input::placeholder,
+.dark-mode textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* Utility */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
   }
-  
-  .dark-mode input[type="text"] {
-  background-color: #4a5568;
-  color: #fff;
-  }
-
+}

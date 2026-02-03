@@ -4,13 +4,11 @@ import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import { DarkModeContext } from "../App";
 
 export default function OAuth() {
-  const darkMode = useContext(DarkModeContext);
   const navigate = useNavigate();
-  async function onGoogleClick() {
+
+  const onGoogleClick = async () => {
     try {
       const auth = getAuth();
       const provider = new GoogleAuthProvider();
@@ -30,19 +28,18 @@ export default function OAuth() {
 
       navigate("/");
     } catch (error) {
-      toast.error("Could not authorize with Google");
+      toast.error("Could not sign in with Google");
     }
-  }
+  };
+
   return (
     <button
       type="button"
       onClick={onGoogleClick}
-      className={`flex items-center justify-center w-full bg-white px-7 py-3 text-md font-medium hover:bg-orange-800 hover:text-white active:bg-red-900 shadow-md hover:shadow-lg active:shadow-lg transition duration-150 ease-in-out rounded ${
-        darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"
-      }`}
+      className="w-full flex items-center justify-center gap-3 px-5 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-sm shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-md active:scale-[0.98] transition-all duration-200"
     >
-      <FcGoogle className=" bg-white rounded-full mr-2" />
-      Sign in with Google
+      <FcGoogle className="w-6 h-6 shrink-0" />
+      <span>Continue with Google</span>
     </button>
   );
 }
