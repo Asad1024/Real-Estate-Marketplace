@@ -18,7 +18,6 @@ import { fetchAddressSuggestions } from "../utils/addressSuggestions";
 import { db } from "../firebase";
 import { useRecentlyViewed } from "../hooks/useRecentlyViewed";
 import {
-  HiClock,
   HiChevronRight,
   HiHome,
   HiShieldCheck,
@@ -106,11 +105,6 @@ export default function Home() {
     return () => unsub();
   }, []);
 
-  const recentIds = useMemo(
-    () => recentlyViewed.map((r) => r.id).join(","),
-    [recentlyViewed]
-  );
-
   useEffect(() => {
     if (!recentlyViewed.length) {
       setRecentListings([]);
@@ -128,7 +122,7 @@ export default function Home() {
       if (!cancelled) setRecentListings(results.filter(Boolean));
     })();
     return () => { cancelled = true; };
-  }, [recentIds, recentlyViewed.length]);
+  }, [recentlyViewed]);
 
   useEffect(() => {
     async function fetchListings() {

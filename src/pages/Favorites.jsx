@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Link } from "react-router-dom";
@@ -8,7 +8,7 @@ import { HiOutlineHeart } from "react-icons/hi";
 
 export default function Favorites() {
   const favorites = useFavoritesContext();
-  const favoriteIds = favorites?.favoriteIds ?? [];
+  const favoriteIds = useMemo(() => favorites?.favoriteIds ?? [], [favorites?.favoriteIds]);
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,7 +35,7 @@ export default function Favorites() {
     }
     fetchListings();
     return () => { cancelled = true; };
-  }, [favoriteIds.join(",")]);
+  }, [favoriteIds]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
