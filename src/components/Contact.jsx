@@ -53,6 +53,29 @@ export default function Contact({ userRef, listing }) {
         </div>
       </div>
 
+      {(hasEmail || hasPhone) && (
+        <div className="mt-4 p-4 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-600/80 space-y-2">
+          {hasEmail && (
+            <p className="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2">
+              <HiOutlineMail className="w-4 h-4 text-primary-500 shrink-0" />
+              <span className="font-medium">Email:</span>
+              <a href={`mailto:${landlord.email.trim()}`} className="text-primary-600 dark:text-primary-400 hover:underline truncate">
+                {landlord.email.trim()}
+              </a>
+            </p>
+          )}
+          {hasPhone && (
+            <p className="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2">
+              <HiOutlinePhone className="w-4 h-4 text-primary-500 shrink-0" />
+              <span className="font-medium">Phone:</span>
+              <a href={`tel:${listing.contact}`} className="text-primary-600 dark:text-primary-400 hover:underline">
+                {listing.contact}
+              </a>
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="flex items-center gap-3 mt-6">
         {hasPhone && (
           <a
